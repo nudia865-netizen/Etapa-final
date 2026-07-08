@@ -204,6 +204,35 @@
   .adv-btn:hover { border-color: var(--green); color: var(--green); }
   .adv-btn.selected { background: var(--green-dim); border-color: var(--green); color: #2ecc71; font-weight: 800; }
 
+  /* Etapas bloqueadas */
+  .locked-stages {
+    background: rgba(0,0,0,.25);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 18px 0 22px;
+  }
+  .locked-title {
+    font-size: .78rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .locked-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .88rem;
+    opacity: .6;
+  }
+  .locked-row:last-child { border-bottom: none; }
+  .locked-icon { font-size: 1rem; flex-shrink: 0; }
+
   /* Info fecha especial */
   .etapa-info {
     background: rgba(232,132,90,.12);
@@ -264,6 +293,13 @@
   <div class="actions">
     <button class="secondary" id="limpiar">🗑 Limpiar</button>
     <button class="primary" id="captura">📥 Guardar imagen</button>
+    <div class="locked-stages">
+        <div class="locked-title">🔒 Próximas etapas — se habilitan al definirse los cruces</div>
+        <div class="locked-row"><span class="locked-icon">🏆</span><span>Semifinal 1</span></div>
+        <div class="locked-row"><span class="locked-icon">🏆</span><span>Semifinal 2</span></div>
+        <div class="locked-row"><span class="locked-icon">🥉</span><span>Partido por el 3° Puesto</span></div>
+        <div class="locked-row"><span class="locked-icon">🌟</span><span>Final</span></div>
+      </div>
     <button class="whatsapp" id="enviarWA">💬 Enviar por WhatsApp</button>
   </div>
 </div>
@@ -352,13 +388,7 @@ const PARTIDOS = [
   // Sábado 11/07 — Cuartos de Final
   { fecha: '2026-07-11', hora: '18:00', local: 'Noruega',    localEdit: false, localPending: false, visitante: 'Inglaterra',visitanteEdit: false, visitantePending: false },
   { fecha: '2026-07-11', hora: '22:00', local: 'Argentina',  localEdit: false, localPending: false, visitante: 'Suiza',     visitanteEdit: false, visitantePending: false },
-  // Semifinales — pendientes
-  { fecha: '2026-07-15', hora: '21:00', local: 'Semi 1A',    localEdit: true,  localPending: true,  visitante: 'Semi 1B',   visitanteEdit: true,  visitantePending: true  },
-  { fecha: '2026-07-16', hora: '21:00', local: 'Semi 2A',    localEdit: true,  localPending: true,  visitante: 'Semi 2B',   visitanteEdit: true,  visitantePending: true  },
-  // 3er puesto — pendiente
-  { fecha: '2026-07-19', hora: '19:00', local: '3° Puesto A',localEdit: true,  localPending: true,  visitante: '3° Puesto B',visitanteEdit: true, visitantePending: true  },
-  // Final — pendiente
-  { fecha: '2026-07-19', hora: '22:00', local: 'Finalista A',localEdit: true,  localPending: true,  visitante: 'Finalista B',visitanteEdit: true, visitantePending: true  },
+  // (Semifinales, 3° puesto y Final se agregan cuando se definan los cruces)
 ];
 
 const DIAS = {
