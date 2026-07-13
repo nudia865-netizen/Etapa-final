@@ -7,17 +7,17 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --green:      #8b3a1a;
-    --green-dim:  rgba(139,58,26,.22);
-    --green-hover:#6e2e14;
-    --dark:       #140a06;
-    --card:       #2a1510;
-    --card2:      #321a12;
-    --border:     #4a2a1e;
-    --text:       #f5ede6;
-    --muted:      #a07868;
-    --orange:     #e8845a;
-    --orange-dim: rgba(232,132,90,.15);
+    --green:      #c0503a;
+    --green-dim:  rgba(192,80,58,.15);
+    --green-hover:#a03020;
+    --dark:       #f5ede6;
+    --card:       #fdf6f0;
+    --card2:      #faeee5;
+    --border:     #e8c8b8;
+    --text:       #2a1208;
+    --muted:      #9a6050;
+    --orange:     #c0503a;
+    --orange-dim: rgba(192,80,58,.12);
   }
   body {
     background: var(--dark);
@@ -82,11 +82,20 @@
   .card-title { font-size: 15px; font-weight: 700; }
   .card-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-  .day-label {
-    font-size: 10px; font-weight: 700; color: var(--muted);
-    text-transform: uppercase; letter-spacing: .08em;
-    margin: 14px 0 6px;
+  .round-title {
+    font-size: 13px; font-weight: 800; color: var(--green);
+    margin: 16px 0 4px;
     display: flex; align-items: center; gap: 8px;
+  }
+  .round-title:first-child { margin-top: 0; }
+  .round-title::after { content: ''; flex: 1; height: 1px; background: var(--green); opacity: .35; }
+
+  .day-label {
+    font-size: 9px; font-weight: 600; color: var(--muted);
+    letter-spacing: .04em;
+    margin: 4px 0 3px;
+    display: flex; align-items: center; gap: 6px;
+    opacity: .8;
   }
   .day-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
@@ -204,6 +213,62 @@
   .adv-btn:hover { border-color: var(--green); color: var(--green); }
   .adv-btn.selected { background: var(--green-dim); border-color: var(--green); color: #2ecc71; font-weight: 800; }
 
+  /* Partido cerrado — fila chica, bloqueada, sin inputs */
+  .match-closed {
+    padding: 4px 10px;
+    margin: 2px 0;
+    border-radius: 7px;
+    background: rgba(0,0,0,.04);
+    border: 1px solid var(--border);
+    opacity: .78;
+  }
+  .closed-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    font-size: .76rem;
+  }
+  .closed-team {
+    flex: 1;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .closed-team.away-team { text-align: right; }
+  .closed-winner {
+    color: var(--text);
+    font-weight: 700;
+    opacity: 1;
+  }
+  .closed-score {
+    flex-shrink: 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: .78rem;
+    color: var(--text);
+    padding: 0 6px;
+    white-space: nowrap;
+  }
+  .closed-sep { margin: 0 3px; opacity: .5; }
+  .closed-nota {
+    font-size: .62rem;
+    font-weight: 400;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .closed-prode {
+    margin-top: 1px;
+    font-size: .64rem;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: .01em;
+  }
+  .closed-prode b { color: var(--text); font-weight: 700; }
+  .closed-prode .hit  { color: #2e8b3d; font-weight: 700; }
+  .closed-prode .miss { color: var(--green-hover); font-weight: 700; }
+
   /* Etapas bloqueadas */
   .locked-stages {
     background: rgba(0,0,0,.25);
@@ -235,8 +300,8 @@
 
   /* Info fecha especial */
   .etapa-info {
-    background: rgba(232,132,90,.12);
-    border: 1px solid var(--accent);
+    background: rgba(192,80,58,.08);
+    border: 1px solid var(--orange);
     border-radius: 10px;
     padding: 10px 14px;
     font-size: .82rem;
@@ -295,8 +360,6 @@
     <button class="primary" id="captura">📥 Guardar imagen</button>
     <div class="locked-stages">
         <div class="locked-title">🔒 Próximas etapas — se habilitan al definirse los cruces</div>
-        <div class="locked-row"><span class="locked-icon">🏆</span><span>Semifinal 1</span></div>
-        <div class="locked-row"><span class="locked-icon">🏆</span><span>Semifinal 2</span></div>
         <div class="locked-row"><span class="locked-icon">🥉</span><span>Partido por el 3° Puesto</span></div>
         <div class="locked-row"><span class="locked-icon">🌟</span><span>Final</span></div>
       </div>
@@ -381,36 +444,80 @@ const FLAGS = {
 // editable: true = nombre editable (pendiente de confirmación)
 // pending: true = equipo aún no definido (mostrar en gris)
 const PARTIDOS = [
-  // Jueves 09/07 — Cuartos de Final
-  { fecha: '2026-07-09', hora: '17:00', local: 'Francia',    localEdit: false, localPending: false, visitante: 'Marruecos', visitanteEdit: false, visitantePending: false },
-  // Viernes 10/07 — Cuartos de Final
-  { fecha: '2026-07-10', hora: '16:00', local: 'España',     localEdit: false, localPending: false, visitante: 'Bélgica',   visitanteEdit: false, visitantePending: false },
-  // Sábado 11/07 — Cuartos de Final
-  { fecha: '2026-07-11', hora: '18:00', local: 'Noruega',    localEdit: false, localPending: false, visitante: 'Inglaterra',visitanteEdit: false, visitantePending: false },
-  { fecha: '2026-07-11', hora: '22:00', local: 'Argentina',  localEdit: false, localPending: false, visitante: 'Suiza',     visitanteEdit: false, visitantePending: false },
-  // (Semifinales, 3° puesto y Final se agregan cuando se definan los cruces)
+  // Cuartos de Final — cerrados (bloqueados, sin inputs)
+  // gl90/gv90 = resultado a los 90'. nota90 = resultado real del suplementario/penales (si lo hubo).
+  // ⚠️ Noruega-Inglaterra y Argentina-Suiza terminaron 1-1 en los 90' y pasaron por penales/suplementario:
+  //    completá nota90 con el resultado real (ej: '4-3 pen.' o '2-1 suplementario').
+  { fecha: '2026-07-09', hora: '17:00', local: 'Francia',    localEdit: false, localPending: false, visitante: 'Marruecos',  visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 2, gv90: 0, avanza: 'Francia',     nota90: null, ronda: 'cuartos' },
+  { fecha: '2026-07-10', hora: '16:00', local: 'España',     localEdit: false, localPending: false, visitante: 'Bélgica',    visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 2, gv90: 1, avanza: 'España',      nota90: null, ronda: 'cuartos' },
+  { fecha: '2026-07-11', hora: '18:00', local: 'Noruega',    localEdit: false, localPending: false, visitante: 'Inglaterra', visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 1, gv90: 1, avanza: 'Inglaterra', nota90: '1-2 suplementario', ronda: 'cuartos' },
+  { fecha: '2026-07-11', hora: '22:00', local: 'Argentina',  localEdit: false, localPending: false, visitante: 'Suiza',      visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 1, gv90: 1, avanza: 'Argentina',  nota90: '3-1 suplementario', ronda: 'cuartos' },
+  // Semifinales
+  { fecha: '2026-07-14', hora: '16:00', local: 'Francia',    localEdit: false, localPending: false, visitante: 'España',     visitanteEdit: false, visitantePending: false, ronda: 'semifinal' },
+  { fecha: '2026-07-15', hora: '16:00', local: 'Inglaterra', localEdit: false, localPending: false, visitante: 'Argentina',  visitanteEdit: false, visitantePending: false, ronda: 'semifinal' },
+  // (3° puesto y Final se agregan cuando se definan los cruces)
 ];
+
+const RONDAS = {
+  cuartos:    '🏆 Cuartos de Final',
+  semifinal:  '⚔️ Semifinales',
+};
 
 const DIAS = {
   '2026-07-09': 'Jue. 9/07',
   '2026-07-10': 'Vie. 10/07',
   '2026-07-11': 'Sáb. 11/07',
+  '2026-07-14': 'Lun. 14/07',
   '2026-07-15': 'Mar. 15/07',
-  '2026-07-16': 'Mié. 16/07',
   '2026-07-19': 'Sáb. 19/07',
 };
 
 /* ── Build DOM ── */
 const container = document.getElementById('matchesContainer');
 let lastFecha = null;
+let lastRonda = null;
 
 PARTIDOS.forEach((p, i) => {
+  if (p.ronda && p.ronda !== lastRonda) {
+    const title = document.createElement('div');
+    title.className = 'round-title';
+    title.textContent = RONDAS[p.ronda] || p.ronda;
+    container.appendChild(title);
+    lastRonda = p.ronda;
+    lastFecha = null; // forzar que se muestre la fecha del primer partido de la ronda
+  }
   if (p.fecha !== lastFecha) {
     const lbl = document.createElement('div');
     lbl.className = 'day-label';
     lbl.textContent = DIAS[p.fecha] || p.fecha;
     container.appendChild(lbl);
     lastFecha = p.fecha;
+  }
+
+  // ── Partido CERRADO: fila compacta solo lectura ──
+  if (p.cerrado) {
+    const flagL = FLAGS[p.local] || '';
+    const flagV = FLAGS[p.visitante] || '';
+    const nota  = p.nota90 ? ` <span class="closed-nota">(${p.nota90})</span>` : '';
+    const advWinner = p.avanza === p.local ? 'local' : 'visit';
+
+    const closed = document.createElement('div');
+    closed.className = 'match-closed';
+    closed.innerHTML = `
+      <div class="closed-main">
+        <span class="closed-team ${advWinner==='local'?'closed-winner':''}">${flagL} ${p.local}</span>
+        <span class="closed-score">${p.gl90}<span class="closed-sep">–</span>${p.gv90}${nota}</span>
+        <span class="closed-team away-team ${advWinner==='visit'?'closed-winner':''}">${p.visitante} ${flagV}</span>
+      </div>`;
+    container.appendChild(closed);
+    // Agregar hidden inputs para que getAdvance/getTeamName funcionen con índice
+    const dummy = document.createElement('div');
+    dummy.className = 'match match-hidden';
+    dummy.dataset.idx = i;
+    dummy.style.display = 'none';
+    dummy.innerHTML = `<input class="gl" value="${p.gl90}"/><input class="gv" value="${p.gv90}"/><input class="advance-input" value="${p.avanza}"/>`;
+    container.appendChild(dummy);
+    return;
   }
 
   const row = document.createElement('div');
@@ -420,7 +527,6 @@ PARTIDOS.forEach((p, i) => {
   const localFlag  = FLAGS[p.local]     || '';
   const visitFlag  = FLAGS[p.visitante] || '';
 
-  // En la fila del partido: bandera siempre visible, nombre editable si corresponde
   const localPendingClass = p.localPending ? ' team-pending' : '';
   const visitPendingClass = p.visitantePending ? ' team-pending' : '';
 
@@ -525,7 +631,7 @@ function showToast(msg, ok = true) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.style.background = ok ? '#5fd436' : '#e74c3c';
-  t.style.color = ok ? '#071200' : '#fff';
+  t.style.color = ok ? '#3a1a0a' : '#fff';
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
@@ -538,6 +644,10 @@ function getTeamName(idx, side) {
 }
 
 function getAdvance(idx) {
+  // Partido cerrado: leer del hidden input
+  const hidden = container.querySelector(`.match-hidden[data-idx="${idx}"] .advance-input`);
+  if (hidden) return hidden.value || null;
+  // Partido abierto: leer del botón seleccionado
   const advRow = container.querySelector(`.advance-row[data-idx="${idx}"]`);
   if (!advRow) return null;
   const sel = advRow.querySelector('.adv-btn.selected');
@@ -609,10 +719,10 @@ function generarImagen() {
     const INNER = W - PAD * 2;
 
     const C = {
-      bg:     '#0f1a12',
-      card2:  '#142018',
-      border: '#1e3324',
-      text:   '#e2ece5',
+      bg:     '#fdf6f0',
+      card2:  '#faeee5',
+      border: '#e8c8b8',
+      text:   '#2a1208',
       muted:  '#6a8c74',
       green:  '#115e2a',
       greenD: 'rgba(17,94,42,0.18)',
