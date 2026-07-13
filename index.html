@@ -684,6 +684,18 @@ document.getElementById('enviarWA').onclick = () => {
     const flagL = FLAGS[localName] || '';
     const flagV = FLAGS[visitName] || '';
     const adv = getAdvance(i);
+
+    if (p.cerrado) {
+      // Partido ya jugado: formato chico/gris (itálica) con el ganador en negrita
+      const winnerLocal = adv === localName;
+      const winnerVisit = adv === visitName;
+      const localTxt = winnerLocal ? `*${localName}*` : `_${localName}_`;
+      const visitTxt = winnerVisit ? `*${visitName}*` : `_${visitName}_`;
+      const nota = p.nota90 ? ` _(${p.nota90})_` : '';
+      texto += `${flagL} ${localTxt} ${gls}\u2013${gvs}${nota} ${visitTxt} ${flagV}\n`;
+      return;
+    }
+
     const advFlag = adv ? (FLAGS[adv] || '') : '';
     const advTxt = adv
       ? ` \u2192 *${advFlag ? advFlag + ' ' : ''}${adv}*`
@@ -747,6 +759,7 @@ function generarImagen() {
     const DAY_LBL_H = 26;
     const MATCH_H   = 48;
     const ADV_H     = 20;   // altura de la fila "Avanza" por partido
+    const CLOSED_H  = 28;   // altura compacta para partidos ya cerrados (cuartos jugados)
     const SEC_GAP   = 14;
     const META_W    = 50;
 
@@ -760,8 +773,13 @@ function generarImagen() {
       cur.items.push({ ...p, idx: i, score: scores[i], localName: teamNames[i].local, visitanteName: teamNames[i].visitante });
     });
 
+    const itemH = p => p.cerrado ? CLOSED_H : (MATCH_H + ADV_H);
+
     let contentH = HEADER_H + 16;
-    groups.forEach(g => { contentH += DAY_LBL_H + g.items.length * (MATCH_H + ADV_H) + SEC_GAP; });
+    groups.forEach(g => {
+      contentH += DAY_LBL_H + SEC_GAP;
+      g.items.forEach(p => { contentH += itemH(p); });
+    });
     contentH += FOOTER_H + 16;
 
     const canvas = document.createElement('canvas');
@@ -826,6 +844,43 @@ function generarImagen() {
       y += DAY_LBL_H;
 
       g.items.forEach((p, pi) => {
+        // ── Partido CERRADO: fila chica y gris, igual que en la web ──
+        if (p.cerrado) {
+          const rowH = CLOSED_H;
+          const my = y + rowH/2;
+
+          roundRect(PAD, y+2, INNER, rowH-4, 6);
+          ctx.fillStyle = 'rgba(0,0,0,0.035)'; ctx.fill();
+          roundRect(PAD, y+2, INNER, rowH-4, 6);
+          ctx.strokeStyle = C.border; ctx.lineWidth = 1*S; ctx.stroke();
+
+          const winnerLocal = advances[p.idx] === p.localName;
+          const winnerVisit = advances[p.idx] === p.visitanteName;
+
+          const scoreStr = `${p.score.gl}–${p.score.gv}`;
+          const notaStr  = p.nota90 ? ` (${p.nota90})` : '';
+          ctx.font = fn(9, 700);
+          const scoreW = ctx.measureText(scoreStr).width / S;
+          ctx.font = fn(7, 400);
+          const notaW = notaStr ? ctx.measureText(notaStr).width / S : 0;
+          const totalCenterW = scoreW + notaW;
+          const centerXAll = PAD + INNER/2;
+
+          let cx = centerXAll - totalCenterW/2;
+          txt(scoreStr, cx, my, fn(9,700), C.text, 'left');
+          if (notaStr) txt(notaStr, cx + scoreW, my, fn(7,400), C.muted, 'left');
+
+          const sideW = (INNER - totalCenterW - 16) / 2;
+          const leftTextEnd    = centerXAll - totalCenterW/2 - 8;
+          const rightTextStart = centerXAll + totalCenterW/2 + 8;
+
+          txt(`${FLAGS[p.localName]||''} ${p.localName}`, leftTextEnd, my, fn(10, winnerLocal?700:500), winnerLocal ? C.text : C.muted, 'right', sideW);
+          txt(`${p.visitanteName} ${FLAGS[p.visitanteName]||''}`, rightTextStart, my, fn(10, winnerVisit?700:500), winnerVisit ? C.text : C.muted, 'left', sideW);
+
+          y += rowH;
+          return;
+        }
+
         const my = y + MATCH_H/2;
         const usableW  = INNER - META_W - 6;
         const COL_W    = usableW / 3;
