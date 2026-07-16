@@ -459,15 +459,20 @@ const PARTIDOS = [
   { fecha: '2026-07-10', hora: '16:00', local: 'España',     localEdit: false, localPending: false, visitante: 'Bélgica',    visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 2, gv90: 1, avanza: 'España',      nota90: null, ronda: 'cuartos' },
   { fecha: '2026-07-11', hora: '18:00', local: 'Noruega',    localEdit: false, localPending: false, visitante: 'Inglaterra', visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 1, gv90: 1, avanza: 'Inglaterra', nota90: '1-2 suplementario', ronda: 'cuartos' },
   { fecha: '2026-07-11', hora: '22:00', local: 'Argentina',  localEdit: false, localPending: false, visitante: 'Suiza',      visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 1, gv90: 1, avanza: 'Argentina',  nota90: '3-1 suplementario', ronda: 'cuartos' },
-  // Semifinales
-  { fecha: '2026-07-14', hora: '16:00', local: 'Francia',    localEdit: false, localPending: false, visitante: 'España',     visitanteEdit: false, visitantePending: false, ronda: 'semifinal' },
-  { fecha: '2026-07-15', hora: '16:00', local: 'Inglaterra', localEdit: false, localPending: false, visitante: 'Argentina',  visitanteEdit: false, visitantePending: false, ronda: 'semifinal' },
-  // (3° puesto y Final se agregan cuando se definan los cruces)
+  // Semifinales — cerradas
+  { fecha: '2026-07-14', hora: '16:00', local: 'Francia',    localEdit: false, localPending: false, visitante: 'España',     visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 0, gv90: 2, avanza: 'España',    nota90: null, ronda: 'semifinal' },
+  { fecha: '2026-07-15', hora: '16:00', local: 'Inglaterra', localEdit: false, localPending: false, visitante: 'Argentina',  visitanteEdit: false, visitantePending: false, cerrado: true, gl90: 1, gv90: 2, avanza: 'Argentina', nota90: null, ronda: 'semifinal' },
+  // 3° puesto
+  { fecha: '2026-07-18', hora: '16:00', local: 'Francia',    localEdit: false, localPending: false, visitante: 'Inglaterra', visitanteEdit: false, visitantePending: false, ronda: 'tercer' },
+  // Final
+  { fecha: '2026-07-19', hora: '16:00', local: 'España',     localEdit: false, localPending: false, visitante: 'Argentina',  visitanteEdit: false, visitantePending: false, ronda: 'final' },
 ];
 
 const RONDAS = {
   cuartos:    '🏆 Cuartos de Final',
   semifinal:  '⚔️ Semifinales',
+  tercer:     '🥉 3° Puesto',
+  final:      '🏅 Final',
 };
 
 const DIAS = {
@@ -476,7 +481,8 @@ const DIAS = {
   '2026-07-11': 'Sáb. 11/07',
   '2026-07-14': 'Lun. 14/07',
   '2026-07-15': 'Mar. 15/07',
-  '2026-07-19': 'Sáb. 19/07',
+  '2026-07-18': 'Sáb. 18/07',
+  '2026-07-19': 'Dom. 19/07',
 };
 
 /* ── Build DOM ── */
