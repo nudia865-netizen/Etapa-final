@@ -582,8 +582,11 @@ PARTIDOS.forEach((p, i) => {
   const localBtnContent = `${localFlagAdv} ${p.local}`.trim();
   const visitBtnContent = `${p.visitante} ${visitFlagAdv}`.trim();
 
+  // Etiqueta según la ronda: Avanza (cuartos/semis), Tercer Lugar (3° puesto), Campeón (final)
+  const advLabel = p.ronda === 'tercer' ? 'Tercer Lugar' : (p.ronda === 'final' ? 'Campeón' : 'Avanza');
+
   advRow.innerHTML = `
-    <span class="advance-label">Avanza</span>
+    <span class="advance-label">${advLabel}</span>
     <button class="adv-btn" data-idx="${i}" data-side="local" title="${p.local}">
       ${localBtnContent}
     </button>
@@ -703,9 +706,11 @@ document.getElementById('enviarWA').onclick = () => {
     }
 
     const advFlag = adv ? (FLAGS[adv] || '') : '';
+    const advLabel = p.ronda === 'tercer' ? 'Tercer Lugar' : (p.ronda === 'final' ? 'Campe\u00f3n' : null);
+    const advPrefix = advLabel ? `${advLabel}: ` : '';
     const advTxt = adv
-      ? ` \u2192 *${advFlag ? advFlag + ' ' : ''}${adv}*`
-      : ' \u2192 _sin selecci\u00f3n_';
+      ? ` \u2192 ${advPrefix}*${advFlag ? advFlag + ' ' : ''}${adv}*`
+      : ` \u2192 ${advPrefix}_sin selecci\u00f3n_`;
     texto += `${flagL} *${localName}* ${gls}\u2013${gvs} *${visitName}* ${flagV}${advTxt}\n`;
   });
 
@@ -915,9 +920,10 @@ function generarImagen() {
 
         y += MATCH_H;
 
-        // ── Fila "Avanza" ──
+        // ── Fila "Avanza" / "Tercer Lugar" / "Campeón" ──
         const adv = advances[p.idx];
         const advY = y + ADV_H/2;
+        const advLabelImg = p.ronda === 'tercer' ? 'TERCER LUGAR' : (p.ronda === 'final' ? 'CAMPEÓN' : 'AVANZA');
         // fondo sutil
         ctx.fillStyle = 'rgba(17,94,42,0.08)';
         ctx.fillRect(PAD*S, y*S, INNER*S, ADV_H*S);
@@ -927,7 +933,7 @@ function generarImagen() {
 
         if (adv) {
           const advFlag = FLAGS[adv] || '';
-          txt('AVANZA →', PAD+4, advY, fn(8,700), C.muted, 'left');
+          txt(`${advLabelImg} →`, PAD+4, advY, fn(8,700), C.muted, 'left');
           // badge con nombre del equipo que avanza
           ctx.font = fn(9,700);
           const advStr = `${advFlag} ${adv}`.trim();
@@ -939,7 +945,7 @@ function generarImagen() {
           ctx.strokeStyle = C.green; ctx.lineWidth = 1*S; ctx.stroke();
           txt(advStr, bx + bw/2, advY, fn(9,700), '#2ecc71', 'center');
         } else {
-          txt('AVANZA → sin selección', PAD+4, advY, fn(8,400), C.muted, 'left');
+          txt(`${advLabelImg} → sin selección`, PAD+4, advY, fn(8,400), C.muted, 'left');
         }
 
         y += ADV_H;
