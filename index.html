@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Prode – Cuartos de Final · Mundial 2026</title>
+<title>Prode Etapa Final · Mundial 2026</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -336,7 +336,7 @@
 <div class="wrapper">
   <div class="header">
     <div class="badge">🏆 Mundial 2026</div>
-    <h1>Prode <span>Cuartos + Etapa Final</span></h1>
+    <h1>Prode <span>Etapa Final</span></h1>
     <p>Completá tu nombre e ingresá tus resultados y pronósticos</p>
   </div>
 
@@ -352,7 +352,7 @@
 
   <div id="prodeCard">
     <div class="card-header">
-      <div class="card-title">🏆 Prode · Cuartos + Etapa Final · Mundial 2026</div>
+      <div class="card-title">🏆 Prode Etapa Final · Mundial 2026</div>
       <div class="etapa-info">
         ℹ️ Esta fecha combina <strong>Cuartos de Final · Semifinales · 3° Puesto · Final</strong>.<br>
         Los cruces de semifinales en adelante se cargan a medida que se definen.
@@ -479,8 +479,8 @@ const DIAS = {
   '2026-07-09': 'Jue. 9/07',
   '2026-07-10': 'Vie. 10/07',
   '2026-07-11': 'Sáb. 11/07',
-  '2026-07-14': 'Lun. 14/07',
-  '2026-07-15': 'Mar. 15/07',
+  '2026-07-14': 'Mar. 14/07',
+  '2026-07-15': 'Mié. 15/07',
   '2026-07-18': 'Sáb. 18/07',
   '2026-07-19': 'Dom. 19/07',
 };
@@ -672,7 +672,7 @@ function getAdvance(idx) {
 /* ── WhatsApp ── */
 document.getElementById('enviarWA').onclick = () => {
   const nombre = document.getElementById('nombre').value.trim() || 'Sin nombre';
-  let texto = `\u26bd *Prode Cuartos + Etapa Final \u00b7 Mundial 2026*\n\ud83d\udc64 ${nombre}\n\n`;
+  let texto = `\u26bd *Prode Etapa Final \u00b7 Mundial 2026*\n\ud83d\udc64 ${nombre}\n\n`;
 
   PARTIDOS.forEach((p, i) => {
     if (p.fecha !== lastF) {
@@ -771,9 +771,12 @@ function generarImagen() {
 
     const groups = [];
     let cur = null;
+    let curRonda = null;
     PARTIDOS.forEach((p, i) => {
-      if (!cur || cur.fecha !== p.fecha) {
-        cur = { fecha: p.fecha, label: DIAS[p.fecha] || p.fecha, items: [] };
+      if (curRonda !== p.ronda) {
+        const sinFecha = p.ronda === 'cuartos' || p.ronda === 'semifinal';
+        curRonda = p.ronda;
+        cur = { ronda: p.ronda, label: sinFecha ? (RONDAS[p.ronda] || p.ronda) : (DIAS[p.fecha] || p.fecha), items: [] };
         groups.push(cur);
       }
       cur.items.push({ ...p, idx: i, score: scores[i], localName: teamNames[i].local, visitanteName: teamNames[i].visitante });
@@ -834,7 +837,7 @@ function generarImagen() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     let y = PAD;
-    txt('⚽  Prode · Cuartos + Etapa Final · Mundial 2026', PAD, y+16, fb(13), C.text);
+    txt('⚽  Prode Etapa Final · Mundial 2026', PAD, y+16, fb(13), C.text);
     txt(nombre ? 'Predicciones de ' + nombre : 'Mundial 2026', PAD, y+36, fn(12), C.muted);
     y += HEADER_H;
 
@@ -946,7 +949,7 @@ function generarImagen() {
 
     line(PAD, y, W-PAD, y, C.border);
     y += 10;
-    txt('Mundial 2026 · Cuartos + Etapa Final', PAD, y+10, fn(10), C.muted);
+    txt('Mundial 2026 · Prode Etapa Final', PAD, y+10, fn(10), C.muted);
     txt(new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'}), W-PAD, y+10, fn(10), C.muted, 'right');
 
     const safe = (nombre||'prode').replace(/[^a-zA-Z0-9_\-]/gi,'_');
